@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}À propos - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+    <h1 class="text-4xl font-bold text-gray-800 mb-6">À propos de la Bibliothèque</h1>
+    
+    <div class="bg-white rounded-lg shadow p-8 space-y-6">
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Notre Mission</h2>
+            <p class="text-gray-700 leading-relaxed">
+                Notre bibliothèque a pour mission de promouvoir la lecture et l'accès à la connaissance 
+                pour tous. Nous nous engageons à offrir une collection diversifiée de livres et des 
+                services de qualité à notre communauté.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Notre Collection</h2>
+            <p class="text-gray-700 leading-relaxed">
+                Avec des milliers de titres couvrant tous les genres et sujets, notre catalogue propose 
+                des ouvrages pour tous les âges et tous les intérêts. Romans, essais, sciences, histoire, 
+                poésie... vous trouverez forcément votre bonheur !
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Services</h2>
+            <ul class="list-disc list-inside text-gray-700 space-y-2">
+                <li>Prêt de livres pour une durée de 14 jours</li>
+                <li>Recherche avancée dans notre catalogue</li>
+                <li>Réservation de livres en ligne</li>
+                <li>Espace de lecture confortable</li>
+                <li>Conseils personnalisés de nos bibliothécaires</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Horaires</h2>
+            <div class="text-gray-700">
+                <p><strong>Lundi - Vendredi:</strong> 9h00 - 19h00</p>
+                <p><strong>Samedi:</strong> 10h00 - 18h00</p>
+                <p><strong>Dimanche:</strong> Fermé</p>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

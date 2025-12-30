@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    path("", include("book.static_urls")),
     path("admin/", admin.site.urls),
     path("book/", include("book.urls", namespace="book")),
     path("author/", include("author.urls", namespace="author")),
