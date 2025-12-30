@@ -1,109 +1,141 @@
-<!doctype html>
-<html lang="fr">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Book Index</title>
+{% extends 'base.html' %}
 
-        <!-- Tailwind CSS CDN -->
-        <script src="https://cdn.tailwindcss.com"></script>
-    </head>
-    <body class="bg-gray-100">
-        <div class="container mx-auto px-4 py-8">
-            <h1 class="text-4xl font-bold text-gray-800 mb-6">
-                📚 Liste des Livres
-            </h1>
+{% block title %}Liste des livres - Bibliothèque{% endblock %}
 
-            <!-- Formulaire de recherche -->
-            <form method="GET" class="flex items-center gap-2 pb-10">
-                <input
-                    type="text"
-                    name="search"
-                    placeholder="Rechercher un livre..."
-                    value="{{ request.GET.search }}"
-                    class="border border-gray-300 rounded px-3 py-2 w-full"
-                />
-                <select
-                    name="category"
-                    class="border border-gray-300 rounded px-3 py-2"
-                >
-                    <option value="">Toutes les catégories</option>
-                    {% for category in categories %}
-                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
-                        {{ category.name }}
-                    </option>
-                    {% endfor %}
-                </select>
-                <select
-                    name="author"
-                    class="border border-gray-300 rounded px-3 py-2"
-                >
-                    <option value="">Tous les auteurs</option>
-                    {% for author in authors %}
-                    <option value="{{ author.id }}" {% if request.GET.author == author.id|stringformat:"s" %}selected{% endif %}>
-                        {{ author.name }}
-                    </option>
-                    {% endfor %}
-                </select>
-                <button
-                    type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    Rechercher
-                </button>
-                {% if request.GET.search or request.GET.category or request.GET.author %}
-                <a
-                    href="{% url 'book:index' %}"
-                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                >
-                    Réinitialiser
-                </a>
-                {% endif %}
-            </form>
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-6">
+        📚 Liste des Livres
+    </h1>
 
-            <!-- Message si recherche active -->
-            {% if request.GET.search or request.GET.category or request.GET.author %}
-            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
-                <p class="text-blue-800">
-                    Filtres actifs :
-                    {% if request.GET.search %}
-                        <strong>"{{ request.GET.search }}"</strong>
-                    {% endif %}
-                    {% if request.GET.category %}
-                        {% if request.GET.search %} • {% endif %}Catégorie
-                    {% endif %}
-                    {% if request.GET.author %}
-                        {% if request.GET.search or request.GET.category %} • {% endif %}Auteur
-                    {% endif %}
-                    <span class="text-blue-600">({{ books|length }} livre(s) trouvé(s))</span>
-                </p>
-            </div>
+    <!-- Formulaire de recherche -->
+    <form method="GET" class="flex items-center gap-2 pb-10">
+        <input
+            type="text"
+            name="search"
+            placeholder="Rechercher un livre..."
+            value="{{ request.GET.search }}"
+            class="border border-gray-300 rounded px-3 py-2 w-full"
+        />
+        <select
+            name="category"
+            class="border border-gray-300 rounded px-3 py-2"
+        >
+            <option value="">Toutes les catégories</option>
+            {% for category in categories %}
+            <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                {{ category.name }}
+            </option>
+            {% endfor %}
+        </select>
+        <select
+            name="author"
+            class="border border-gray-300 rounded px-3 py-2"
+        >
+            <option value="">Tous les auteurs</option>
+            {% for author in authors %}
+            <option value="{{ author.id }}" {% if request.GET.author == author.id|stringformat:"s" %}selected{% endif %}>
+                {{ author.name }}
+            </option>
+            {% endfor %}
+        </select>
+        <button
+            type="submit"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+            Rechercher
+        </button>
+        {% if request.GET.search or request.GET.category or request.GET.author %}
+        <a
+            href="{% url 'book:index' %}"
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+        >
+            Réinitialiser
+        </a>
+        {% endif %}
+    </form>
+
+    <!-- Message si recherche active -->
+    {% if request.GET.search or request.GET.category or request.GET.author %}
+    <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+        <p class="text-blue-800">
+            Filtres actifs :
+            {% if request.GET.search %}
+                <strong>"{{ request.GET.search }}"</strong>
             {% endif %}
+            {% if request.GET.category %}
+                {% if request.GET.search %} • {% endif %}Catégorie
+            {% endif %}
+            {% if request.GET.author %}
+                {% if request.GET.search or request.GET.category %} • {% endif %}Auteur
+            {% endif %}
+            <span class="text-blue-600">({{ page_obj.paginator.count }} livre(s) trouvé(s))</span>
+        </p>
+    </div>
+    {% endif %}
 
-            <!-- Liste des livres -->
-            <ul class="space-y-4">
-                {% for book in books %}
-                <li
-                    class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
-                >
-                    <a
-                        href="{% url 'book:detail' book.id %}"
-                        class="text-blue-600 hover:text-blue-800 font-medium"
-                    >
-                        {{ book.title }}
-                    </a>
-                    <p class="text-gray-600 text-sm mt-1">
-                        par {{ book.author.name }} • {{ book.publication_year }}
-                    </p>
-                </li>
-                {% empty %}
-                <li
-                    class="bg-white rounded-lg shadow p-6 text-center text-gray-500"
-                >
-                    Aucun livre trouvé.
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </body>
-</html>
+    <!-- Liste des livres -->
+    <ul class="space-y-4">
+        {% for book in page_obj %}
+        <li
+            class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
+        >
+            <a
+                href="{% url 'book:detail' book.id %}"
+                class="text-blue-600 hover:text-blue-800 font-medium"
+            >
+                {{ book.title }}
+            </a>
+            <p class="text-gray-600 text-sm mt-1">
+                par {{ book.author.name }} • {{ book.publication_year }}
+            </p>
+        </li>
+        {% empty %}
+        <li
+            class="bg-white rounded-lg shadow p-6 text-center text-gray-500"
+        >
+            Aucun livre trouvé.
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="mt-8 flex items-center justify-center gap-2">
+        {% if page_obj.has_previous %}
+        <a
+            href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}"
+            class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+        >
+            « Première
+        </a>
+        <a
+            href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}"
+            class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+        >
+            ‹ Précédente
+        </a>
+        {% endif %}
+
+        <span class="px-4 py-2 text-gray-700 font-medium">
+            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a
+            href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}"
+            class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+        >
+            Suivante ›
+        </a>
+        <a
+            href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.author %}&author={{ request.GET.author }}{% endif %}"
+            class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+        >
+            Dernière »
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
