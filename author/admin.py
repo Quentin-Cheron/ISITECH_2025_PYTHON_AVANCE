@@ -51,5 +51,3 @@ class AuthorAdmin(admin.ModelAdmin):
             if obj.first_name and obj.last_name
             else "-"
         )
-
-    get_full_name.short_description = "Nom complet"

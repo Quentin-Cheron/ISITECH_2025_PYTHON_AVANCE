@@ -1,12 +1,12 @@
-from django.contrib import admin
-from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('book.urls', namespace='book')),
-    path('author/', include('author.urls', namespace='author')),
+    path("admin/", admin.site.urls),
+    path("book/", include("book.urls", namespace="book")),
+    path("author/", include("author.urls", namespace="author")),
 ]
 
 if settings.DEBUG:
