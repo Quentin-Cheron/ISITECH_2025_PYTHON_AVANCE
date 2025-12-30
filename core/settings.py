@@ -12,12 +12,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-3i+*z*b#t)li16mz=+l*3y06!tnad=hh)vd1bvr0c1929w)x_x'
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*']
+# Ces valeurs sont surchargées par settings_local.py
+SECRET_KEY = 'default-secret-key-change-this'
+DEBUG = False
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -29,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Applications locales
     'book',
     'author',
@@ -67,6 +66,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# Configuration par défaut - surchargée par settings_local.py
 
 DATABASES = {
     'default': {
@@ -118,3 +118,13 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Import des configurations locales sensibles
+# Ce fichier doit être créé localement et ne doit PAS être commité
+try:
+    from .settings_local import *
+except ImportError:
+    raise ImportError(
+        "Le fichier settings_local.py est manquant. "
+        "Créez-le à partir de settings_local.py.example"
+    )
