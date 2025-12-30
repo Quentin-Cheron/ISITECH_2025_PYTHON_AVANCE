@@ -46,4 +46,4 @@ class Loan(models.Model):
         ordering = ["-loan_date"]
 
     def __str__(self) -> str:
-        return f"{self.borrower_name} - {str(Book.title)} ({self.status})"
+        return f"{self.borrower_name} - {self.book.title} ({self.status})"
