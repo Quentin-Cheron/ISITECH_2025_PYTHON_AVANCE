@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Liste des auteurs - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-6">
+        ✍️ Liste des Auteurs
+    </h1>
+
+    <!-- Formulaire de recherche -->
+    <form method="GET" class="flex items-center gap-2 pb-10">
+        <input
+            type="text"
+            name="search"
+            placeholder="Rechercher un auteur par nom ou prénom..."
+            value="{{ request.GET.search }}"
+            class="border border-gray-300 rounded px-3 py-2 w-full"
+        />
+        <button
+            type="submit"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+            Rechercher
+        </button>
+        {% if request.GET.search %}
+        <a
+            href="{% url 'author:list' %}"
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+        >
+            Réinitialiser
+        </a>
+        {% endif %}
+    </form>
+
+    <!-- Message si recherche active -->
+    {% if request.GET.search %}
+    <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+        <p class="text-blue-800">
+            Résultats pour : <strong>"{{ request.GET.search }}"</strong>
+            <span class="text-blue-600">({{ page_obj.paginator.count }} auteur(s) trouvé(s))</span>
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- Liste des auteurs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for author in page_obj %}
+        <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-2">
+                <a href="{% url 'author:detail' author.id %}" class="text-blue-600 hover:text-blue-800">
+                    {{ author.name }}
+                </a>
+            </h3>
+            
+            <div class="space-y-2 text-sm text-gray-600">
+                {% if author.birth_date %}
+                <p>🎂 Né(e) le {{ author.birth_date|date:"d/m/Y" }}</p>
+                {% endif %}
+                
+                {% if author.nationality %}
+                <p>🌍 {{ author.nationality }}</p>
+                {% endif %}
+                
+                <p class="text-blue-600 font-medium">
+                    📚 {{ author.books.count }} livre(s)
+                </p>
+            </div>
+            
+            {% if author.biography %}
+            <p class="mt-3 text-gray-700 text-sm line-clamp-3">
+                {{ author.biography|truncatewords:20 }}
+            </p>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="col-span-full bg-white rounded-lg shadow p-6 text-center text-gray-500">
+            Aucun auteur trouvé.
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="mt-8 flex items-center justify-center gap-2">
+        {% if page_obj.has_previous %}
+        <a
+            href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+            class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+        >
+            « Première
+        </a>
+        <a
+            href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+            class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+        >
+            ‹ Précédente
+        </a>
+        {% endif %}
+
+        <span class="px-4 py-2 text-gray-700 font-medium">
+            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a
+            href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+            class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+        >
+            Suivante ›
+        </a>
+        <a
+            href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+            class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
+        >
+            Dernière »
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

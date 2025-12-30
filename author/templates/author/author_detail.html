@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ author.name }} - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8 max-w-5xl">
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <!-- Header de l'auteur -->
+        <div class="bg-gradient-to-r from-purple-50 to-indigo-50 px-8 py-6 border-b border-gray-200">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ author.name }}</h1>
+            {% if author.nationality %}
+            <p class="text-gray-600">🌍 {{ author.nationality }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Informations détaillées -->
+        <div class="p-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Colonne gauche -->
+                <div class="space-y-4">
+                    {% if author.birth_date %}
+                    <div class="flex items-start gap-3">
+                        <div class="w-32 text-sm font-medium text-gray-500">Date de naissance</div>
+                        <div class="flex-1 text-gray-900">{{ author.birth_date|date:"d/m/Y" }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if author.death_date %}
+                    <div class="flex items-start gap-3">
+                        <div class="w-32 text-sm font-medium text-gray-500">Date de décès</div>
+                        <div class="flex-1 text-gray-900">{{ author.death_date|date:"d/m/Y" }}</div>
+                    </div>
+                    {% endif %}
+
+                    {% if author.website %}
+                    <div class="flex items-start gap-3">
+                        <div class="w-32 text-sm font-medium text-gray-500">Site web</div>
+                        <div class="flex-1">
+                            <a href="{{ author.website }}" target="_blank" class="text-blue-600 hover:text-blue-800">
+                                {{ author.website }}
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Colonne droite - Stats -->
+                <div class="space-y-4">
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <div class="text-3xl font-bold text-blue-600">{{ author.books.count }}</div>
+                        <div class="text-sm text-gray-600">Livre(s) publié(s)</div>
+                    </div>
+                    
+                    {% if author.is_deceased %}
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div class="text-sm text-gray-600">✝ Décédé(e)</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Biographie -->
+            {% if author.biography %}
+            <div class="mb-8 pt-6 border-t border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900 mb-3">Biographie</h2>
+                <p class="text-gray-700 leading-relaxed">{{ author.biography }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Livres de l'auteur -->
+            <div class="pt-6 border-t border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                    📚 Livres de {{ author.first_name }} ({{ books|length }})
+                </h2>
+                
+                {% if books %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% for book in books %}
+                    <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                        <h3 class="font-bold text-gray-800 mb-2">
+                            <a href="{% url 'book:detail' book.id %}" class="text-blue-600 hover:text-blue-800">
+                                {{ book.title }}
+                            </a>
+                        </h3>
+                        
+                        <div class="space-y-1 text-sm text-gray-600">
+                            <p>📅 {{ book.publication_year }}</p>
+                            <p>📖 {{ book.category.name }}</p>
+                            <p>
+                                {% if book.available_copies > 0 %}
+                                    <span class="text-green-600">✓ Disponible ({{ book.available_copies }})</span>
+                                {% else %}
+                                    <span class="text-red-600">✗ Indisponible</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-center py-6">Aucun livre de cet auteur dans la bibliothèque.</p>
+                {% endif %}
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-8 pt-6 border-t border-gray-200 flex gap-3">
+                <a href="{% url 'author:list' %}" class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">
+                    Retour à la liste
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

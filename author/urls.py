@@ -4,5 +4,6 @@ from . import views
 app_name = 'author'
 
 urlpatterns = [
-    # À implémenter
+    path('', views.author_list, name='list'),
+    path('<int:pk>/', views.author_detail, name='detail'),
 ]
