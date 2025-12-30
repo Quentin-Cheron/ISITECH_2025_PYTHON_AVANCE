@@ -23,15 +23,37 @@
                     value="{{ request.GET.search }}"
                     class="border border-gray-300 rounded px-3 py-2 w-full"
                 />
+                <select
+                    name="category"
+                    class="border border-gray-300 rounded px-3 py-2"
+                >
+                    <option value="">Toutes les catégories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <select
+                    name="author"
+                    class="border border-gray-300 rounded px-3 py-2"
+                >
+                    <option value="">Tous les auteurs</option>
+                    {% for author in authors %}
+                    <option value="{{ author.id }}" {% if request.GET.author == author.id|stringformat:"s" %}selected{% endif %}>
+                        {{ author.name }}
+                    </option>
+                    {% endfor %}
+                </select>
                 <button
                     type="submit"
                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >
                     Rechercher
                 </button>
-                {% if request.GET.search %}
+                {% if request.GET.search or request.GET.category or request.GET.author %}
                 <a
-                    href="/book"
+                    href="{% url 'book:index' %}"
                     class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
                 >
                     Réinitialiser
@@ -40,13 +62,20 @@
             </form>
 
             <!-- Message si recherche active -->
-            {% if request.GET.search %}
+            {% if request.GET.search or request.GET.category or request.GET.author %}
             <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
                 <p class="text-blue-800">
-                    Résultats pour : <strong>"{{ request.GET.search }}"</strong>
-                    <span class="text-blue-600"
-                        >({{ books|length }} livre(s) trouvé(s))</span
-                    >
+                    Filtres actifs :
+                    {% if request.GET.search %}
+                        <strong>"{{ request.GET.search }}"</strong>
+                    {% endif %}
+                    {% if request.GET.category %}
+                        {% if request.GET.search %} • {% endif %}Catégorie
+                    {% endif %}
+                    {% if request.GET.author %}
+                        {% if request.GET.search or request.GET.category %} • {% endif %}Auteur
+                    {% endif %}
+                    <span class="text-blue-600">({{ books|length }} livre(s) trouvé(s))</span>
                 </p>
             </div>
             {% endif %}

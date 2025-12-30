@@ -1,20 +1,42 @@
+from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from django.shortcuts import get_object_or_404, render
 
-from .models import Book
+from .models import Book, Category
+from author.models import Author
 
 
 def index(request):
     books = Book.objects.all()
-
-    # Récupérer le paramètre de recherche depuis l'URL
-    search_query = request.GET.get("search")
-
+    categories = Category.objects.all()
+    authors = Author.objects.all()
+    
+    # Récupérer les paramètres de recherche depuis l'URL
+    search_query = request.GET.get('search', '')
+    category_id = request.GET.get('category', '')
+    author_id = request.GET.get('author', '')
+    
     # Filtrer si une recherche est active
     if search_query:
-        books = books.filter(Q(title__icontains=search_query))
-
-    return render(request, "index.html", {"books": books})
+        books = books.filter(
+            Q(title__icontains=search_query) |
+            Q(author__first_name__icontains=search_query) |
+            Q(author__last_name__icontains=search_query) |
+            Q(isbn__icontains=search_query)
+        )
+    
+    # Filtrer par catégorie si sélectionnée
+    if category_id:
+        books = books.filter(category_id=category_id)
+    
+    # Filtrer par auteur si sélectionné
+    if author_id:
+        books = books.filter(author_id=author_id)
+    
+    return render(request, "index.html", {
+        "books": books,
+        "categories": categories,
+        "authors": authors
+    })
 
 
 def detail(request, pk):
