@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Bibliothèque{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-4xl font-bold text-gray-800">
+            📖 {{ title }}
+        </h1>
+        <a href="{% url 'loan:create' %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Nouvel emprunt
+        </a>
+    </div>
+
+    <!-- Navigation des filtres -->
+    <div class="flex gap-2 mb-6">
+        <a href="{% url 'loan:list' %}" class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 {% if not is_overdue and not show_all %}bg-blue-100{% endif %}">
+            Actifs
+        </a>
+        <a href="{% url 'loan:overdue' %}" class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 {% if is_overdue %}bg-red-100{% endif %}">
+            En retard
+        </a>
+        <a href="{% url 'loan:history' %}" class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 {% if show_all %}bg-gray-100{% endif %}">
+            Historique
+        </a>
+    </div>
+
+    <!-- Recherche pour l'historique -->
+    {% if show_all %}
+    <form method="GET" class="mb-6">
+        <div class="flex gap-2">
+            <input
+                type="text"
+                name="search"
+                placeholder="Rechercher par nom d'emprunteur..."
+                value="{{ request.GET.search }}"
+                class="border border-gray-300 rounded px-3 py-2 flex-1"
+            />
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Rechercher
+            </button>
+        </div>
+    </form>
+    {% endif %}
+
+    <!-- Liste des emprunts -->
+    {% if loans %}
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Livre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Emprunteur</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date d'emprunt</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date de retour</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for loan in loans %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        <a href="{% url 'book:detail' loan.book.id %}" class="text-blue-600 hover:text-blue-800 font-medium">
+                            {{ loan.book.title }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900">{{ loan.borrower_name }}</div>
+                        <div class="text-sm text-gray-500">{{ loan.borrower_email }}</div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-900">
+                        {{ loan.loan_date|date:"d/m/Y" }}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        {% if loan.return_date %}
+                            <span class="text-green-600">{{ loan.return_date|date:"d/m/Y" }}</span>
+                        {% else %}
+                            <span class="{% if loan.due_date < today %}text-red-600 font-bold{% endif %}">
+                                {{ loan.due_date|date:"d/m/Y" }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if loan.status == 'active' %}
+                            {% if loan.due_date < today %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                    En retard
+                                </span>
+                            {% else %}
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    Actif
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                Retourné
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-sm">
+                        {% if loan.status == 'active' %}
+                            <a href="{% url 'loan:return' loan.id %}" class="text-green-600 hover:text-green-800 font-medium">
+                                Retourner
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="mt-8 flex items-center justify-center gap-2">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+           class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50">
+            ‹ Précédente
+        </a>
+        {% endif %}
+
+        <span class="px-4 py-2 text-gray-700">
+            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}"
+           class="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50">
+            Suivante ›
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+        Aucun emprunt trouvé.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

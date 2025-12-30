@@ -7,6 +7,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("book/", include("book.urls", namespace="book")),
     path("author/", include("author.urls", namespace="author")),
+    path("loan/", include("book.loan_urls", namespace="loan")),
 ]
 
 if settings.DEBUG:
