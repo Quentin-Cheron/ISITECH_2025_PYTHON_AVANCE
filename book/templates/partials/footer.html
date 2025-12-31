@@ -1,0 +1,46 @@
+<!-- Footer -->
+<footer class="bg-white border-t border-gray-200 mt-16">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Footer principal -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+            <!-- À propos -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">📚 Bibliothèque</h3>
+                <p class="text-gray-600 text-sm">
+                    Système de gestion de bibliothèque moderne pour faciliter l'emprunt et la gestion des livres.
+                </p>
+            </div>
+
+            <!-- Navigation rapide -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Navigation</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="{% url 'static:home' %}" class="text-gray-600 hover:text-blue-600 transition-colors">Accueil</a></li>
+                    <li><a href="{% url 'book:index' %}" class="text-gray-600 hover:text-blue-600 transition-colors">Livres</a></li>
+                    <li><a href="{% url 'author:list' %}" class="text-gray-600 hover:text-blue-600 transition-colors">Auteurs</a></li>
+                    <li><a href="{% url 'loan:list' %}" class="text-gray-600 hover:text-blue-600 transition-colors">Emprunts</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Contact</h3>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li><a href="{% url 'static:about' %}" class="hover:text-blue-600 transition-colors">À propos</a></li>
+                    <li><a href="{% url 'static:contact' %}" class="hover:text-blue-600 transition-colors">Nous contacter</a></li>
+                    <li><a href="{% url 'admin:index' %}" class="hover:text-blue-600 transition-colors">Administration</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="border-t border-gray-200 pt-6 text-center">
+            <p class="text-gray-600 text-sm">
+                &copy; {% now "Y" %} Système de Gestion de Bibliothèque. Tous droits réservés.
+            </p>
+            <p class="text-gray-500 text-xs mt-2">
+                Développé avec Django & Tailwind CSS
+            </p>
+        </div>
+    </div>
+</footer>

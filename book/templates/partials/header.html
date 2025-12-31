@@ -1,0 +1,45 @@
+<!-- Header Navigation -->
+<header class="bg-white shadow-sm border-b border-gray-200">
+    <div class="container mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+            <!-- Logo -->
+            <a href="{% url 'static:home' %}" class="text-2xl font-bold text-gray-800 hover:text-blue-600 transition-colors">
+                📚 Bibliothèque
+            </a>
+            
+            <!-- Navigation principale -->
+            <nav class="hidden md:flex gap-6">
+                <a href="{% url 'static:home' %}" 
+                   class="text-gray-600 hover:text-blue-600 font-medium transition-colors {% if request.resolver_match.url_name == 'home' %}text-blue-600 border-b-2 border-blue-600{% endif %}">
+                    Accueil
+                </a>
+                <a href="{% url 'book:index' %}" 
+                   class="text-gray-600 hover:text-blue-600 font-medium transition-colors {% if request.resolver_match.namespace == 'book' %}text-blue-600 border-b-2 border-blue-600{% endif %}">
+                    Livres
+                </a>
+                <a href="{% url 'author:list' %}" 
+                   class="text-gray-600 hover:text-blue-600 font-medium transition-colors {% if request.resolver_match.namespace == 'author' %}text-blue-600 border-b-2 border-blue-600{% endif %}">
+                    Auteurs
+                </a>
+                <a href="{% url 'loan:list' %}" 
+                   class="text-gray-600 hover:text-blue-600 font-medium transition-colors {% if request.resolver_match.namespace == 'loan' %}text-blue-600 border-b-2 border-blue-600{% endif %}">
+                    Emprunts
+                </a>
+                <a href="{% url 'static:about' %}" 
+                   class="text-gray-600 hover:text-blue-600 font-medium transition-colors {% if request.resolver_match.url_name == 'about' %}text-blue-600 border-b-2 border-blue-600{% endif %}">
+                    À propos
+                </a>
+                <a href="{% url 'static:contact' %}" 
+                   class="text-gray-600 hover:text-blue-600 font-medium transition-colors {% if request.resolver_match.url_name == 'contact' %}text-blue-600 border-b-2 border-blue-600{% endif %}">
+                    Contact
+                </a>
+            </nav>
+
+            <!-- Bouton Admin -->
+            <a href="{% url 'admin:index' %}" 
+               class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium">
+                Admin
+            </a>
+        </div>
+    </div>
+</header>
