@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from .forms import LoanForm
-from .models import Loan
+from .models import Book, Loan
 
 
 def loan_list(request):
@@ -74,8 +74,17 @@ def loan_history(request):
     )
 
 
-def loan_create(request):
+def loan_create(request, book_id=None):
     """Formulaire de création d'emprunt"""
+    # Récupérer le livre si book_id est fourni
+    selected_book = None
+    if book_id:
+        selected_book = get_object_or_404(Book, pk=book_id)
+        # Vérifier la disponibilité immédiatement
+        if selected_book.available_copies == 0:
+            messages.error(request, f'Le livre "{selected_book.title}" n\'est plus disponible.')
+            return redirect('book:detail', pk=book_id)
+
     if request.method == "POST":
         form = LoanForm(request.POST)
         if form.is_valid():
@@ -97,10 +106,20 @@ def loan_create(request):
             else:
                 messages.error(request, "Ce livre n'est plus disponible.")
     else:
-        form = LoanForm()
+        # Pré-remplir le formulaire avec le livre sélectionné
+        if selected_book:
+            form = LoanForm(initial={'book': selected_book})
+        else:
+            form = LoanForm()
 
     return render(
-        request, "loan/loan_form.html", {"form": form, "title": "Nouvel emprunt"}
+        request, 
+        "loan/loan_form.html", 
+        {
+            "form": form, 
+            "title": "Nouvel emprunt",
+            "selected_book": selected_book
+        }
     )
 
 
